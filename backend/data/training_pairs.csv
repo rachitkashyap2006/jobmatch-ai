@@ -1,0 +1,21 @@
+resume_text,job_id,relevant
+"Python developer skilled in SQL Pandas NumPy and exploratory data analysis",J001,1
+"Python developer skilled in SQL Pandas NumPy and machine learning",J002,1
+"Python developer skilled in NumPy Pandas Scikit-learn and model evaluation",J003,1
+"Python developer experienced in FastAPI Docker Git and ML deployment",J004,1
+"Analyst skilled in Excel Power BI SQL and business dashboards",J005,1
+"Python developer experienced in NLP text processing and sentence transformers",J006,1
+"Backend developer skilled in Python FastAPI SQL PostgreSQL and Git",J007,1
+"Python developer skilled in OpenCV PyTorch deep learning and image classification",J008,1
+"Business analyst skilled in SQL Excel Power BI and reporting",J009,1
+"Python developer skilled in SQL Pandas PostgreSQL and data pipelines",J010,1
+"Frontend developer skilled in HTML CSS JavaScript and React",J001,0
+"Frontend developer skilled in React CSS and UI design",J002,0
+"Graphic designer skilled in Photoshop Illustrator and visual design",J003,0
+"Graphic designer skilled in branding illustration and typography",J004,0
+"Android developer skilled in Kotlin Android Studio and mobile apps",J005,0
+"Android developer skilled in Kotlin and mobile application development",J006,0
+"Mechanical engineer skilled in CAD manufacturing and thermodynamics",J007,0
+"Mechanical engineer skilled in SolidWorks and mechanical design",J008,0
+"Content writer skilled in editing copywriting and storytelling",J009,0
+"Content writer skilled in SEO writing editing and proofreading",J010,0

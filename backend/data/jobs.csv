@@ -1,0 +1,11 @@
+job_id,title,description,required_skills,experience_level
+J001,Junior Data Analyst,"Analyze datasets and build reports using SQL and Python",python;sql;pandas;excel;power bi;statistics,fresher
+J002,Junior Data Scientist,"Perform EDA and build predictive machine learning models",python;sql;pandas;numpy;scikit-learn;statistics,fresher
+J003,Machine Learning Intern,"Train and evaluate ML models and prepare datasets",python;numpy;pandas;scikit-learn;machine learning,fresher
+J004,Junior ML Engineer,"Develop and deploy machine learning APIs",python;scikit-learn;fastapi;docker;git;machine learning,0-1 year
+J005,Data Visualization Analyst,"Create business dashboards and analyze KPIs",sql;excel;power bi;tableau;statistics,fresher
+J006,NLP Intern,"Build text processing and semantic similarity systems",python;nlp;sentence-transformers;scikit-learn;machine learning,fresher
+J007,Python Backend Intern,"Build REST APIs and work with databases",python;fastapi;sql;postgresql;git;docker,fresher
+J008,Computer Vision Intern,"Develop image classification and object detection models",python;opencv;pytorch;deep learning;machine learning,fresher
+J009,Business Analyst Intern,"Analyze business requirements and prepare reports",sql;excel;power bi;communication;statistics,fresher
+J010,Data Engineering Intern,"Build data pipelines and process structured datasets",python;sql;pandas;postgresql;docker;git,fresher

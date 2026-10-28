@@ -1,0 +1,440 @@
+
+#root {
+  min-height: 100vh;
+}
+
+.app {
+  width: min(100% - 36px, 1000px);
+  margin: auto;
+}
+
+.header {
+  min-height: 76px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 750;
+  font-size: 19px;
+}
+
+.brand-icon {
+  background: #173e35;
+  color: white;
+  padding: 9px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.header-label,
+.eyebrow {
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 1.6px;
+  color: #477567;
+}
+
+.hero {
+  text-align: center;
+  padding: 64px 0 38px;
+}
+
+.hero h1 {
+  font-size: clamp(36px, 6vw, 58px);
+  line-height: 1.08;
+  letter-spacing: -2px;
+  margin: 18px 0;
+}
+
+.hero h1 span {
+  color: #25816b;
+}
+
+.hero p {
+  max-width: 590px;
+  margin: auto;
+  color: #667085;
+  line-height: 1.8;
+}
+
+.analyzer {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.panel {
+  background: white;
+  border: 1px solid #e4e8e5;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.step {
+  background: #e8f3ee;
+  color: #216c58;
+  border-radius: 9px;
+  padding: 9px 10px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.section-heading h2,
+.skill-card h2,
+.recommendations h2 {
+  font-size: 18px;
+  margin: 0 0 6px;
+}
+
+.section-heading p,
+.subheading {
+  font-size: 13px;
+  color: #77817b;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.upload-area {
+  display: flex;
+  min-height: 150px;
+  border: 1.5px dashed #b7c8bf;
+  background: #f8fbf9;
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  text-align: center;
+  padding: 18px;
+}
+
+.upload-area input {
+  display: none;
+}
+
+.upload-area strong {
+  overflow-wrap: anywhere;
+}
+
+.upload-area > span:last-child {
+  font-size: 12px;
+  color: #78847d;
+}
+
+.upload-icon {
+  font-size: 25px;
+  color: #25816b;
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid #d8dfda;
+  border-radius: 10px;
+  padding: 15px;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.7;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: #25816b;
+  box-shadow: 0 0 0 3px #25816b18;
+}
+
+.analyze-button {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 16px;
+  color: white;
+  background: #173e35;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.analyze-button:hover {
+  background: #24594b;
+}
+
+.analyze-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.privacy-note,
+.disclaimer {
+  text-align: center;
+  color: #77817b;
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 14px 0 0;
+}
+
+.error {
+  color: #a62929;
+  background: #fff0f0;
+  padding: 13px;
+  border-radius: 9px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.results {
+  padding: 58px 0 30px;
+}
+
+.results-heading {
+  margin-bottom: 22px;
+}
+
+.results-heading h2 {
+  font-size: 30px;
+  margin: 10px 0;
+}
+
+.score-grid,
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.score-card {
+  border: 1px solid #e4e8e5;
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.score-card p {
+  font-size: 13px;
+  color: #66756d;
+  min-height: 36px;
+}
+
+.score-card strong {
+  font-size: 30px;
+  letter-spacing: -1px;
+}
+
+.progress {
+  background: #e8eee9;
+  height: 6px;
+  border-radius: 20px;
+  margin-top: 16px;
+  overflow: hidden;
+}
+
+.progress div {
+  height: 100%;
+  background: #25816b;
+  border-radius: inherit;
+}
+
+.skill-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.skill-card h2 {
+  margin-bottom: 18px;
+}
+
+.skill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.skill-tag {
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 7px;
+}
+
+.skill-tag.matched {
+  background: #e6f5ec;
+  color: #206742;
+}
+
+.skill-tag.missing {
+  background: #fff1df;
+  color: #875517;
+}
+
+.recommendations {
+  margin-top: 6px;
+}
+
+.recommendations .subheading {
+  margin-bottom: 18px;
+}
+
+.recommendation {
+  border-top: 1px solid #e9ecea;
+  padding: 17px 0;
+}
+
+.recommendation-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.recommendation-top span {
+  color: #477567;
+  font-size: 12px;
+}
+
+.recommendation p,
+.recommendation small {
+  color: #68766e;
+  line-height: 1.7;
+}
+
+.recommendation p {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.recommendation small {
+  font-size: 12px;
+}
+
+footer {
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+  padding: 25px 0;
+  margin-top: 45px;
+  color: #7b857f;
+  font-size: 12px;
+}
+
+@media (max-width: 650px) {
+  .header-label {
+    font-size: 9px;
+  }
+
+  .hero {
+    padding-top: 44px;
+  }
+
+  .hero h1 {
+    letter-spacing: -1px;
+  }
+
+  .panel {
+    padding: 18px;
+  }
+
+  .score-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .score-card p {
+    min-height: auto;
+  }
+
+  .skill-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.youtube-results {
+  margin-top: 24px;
+}
+
+.youtube-skill-group {
+  margin-top: 28px;
+}
+
+.youtube-skill-group h3 {
+  margin-bottom: 16px;
+}
+
+.youtube-video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+}
+
+.youtube-video {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.youtube-thumbnail {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  background: #eee;
+}
+
+.youtube-video h4 {
+  line-height: 1.45;
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+
+.youtube-video h4 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.youtube-video h4 a:hover {
+  text-decoration: underline;
+}
+
+.youtube-channel,
+.youtube-meta {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin: 6px 0;
+}
+
+.course-label {
+  display: inline-block;
+  font-size: 0.8rem;
+  margin: 8px 0;
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: #f1f1f1;
+  color: #333;
+}
+
+.youtube-watch-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.youtube-watch-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .youtube-video-grid {
+    grid-template-columns: 1fr;
+  }
+}

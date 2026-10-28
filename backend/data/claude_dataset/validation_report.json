@@ -1,0 +1,175 @@
+{
+  "checks": {
+    "row_counts": {
+      "pass": true,
+      "detail": "jobs=100, resumes=200, pairs=2000"
+    },
+    "pairs_columns_exact": {
+      "pass": true,
+      "detail": ""
+    },
+    "no_missing_or_blank": {
+      "pass": true,
+      "detail": ""
+    },
+    "unique_ids": {
+      "pass": true,
+      "detail": ""
+    },
+    "foreign_keys": {
+      "pass": true,
+      "detail": ""
+    },
+    "no_duplicate_pairs": {
+      "pass": true,
+      "detail": ""
+    },
+    "labels_valid": {
+      "pass": true,
+      "detail": "{0: 784, 1: 789, 2: 427}"
+    },
+    "pair_text_matches_source_tables": {
+      "pass": true,
+      "detail": ""
+    },
+    "skill_overlap_recomputes": {
+      "pass": true,
+      "detail": ""
+    },
+    "resume_skills_appear_in_text": {
+      "pass": true,
+      "detail": ""
+    },
+    "required_skills_appear_in_description": {
+      "pass": true,
+      "detail": ""
+    },
+    "pairs_per_resume_is_10": {
+      "pass": true,
+      "detail": ""
+    },
+    "every_job_used": {
+      "pass": true,
+      "detail": "pairs per job min/median/max = 6/19/32"
+    },
+    "jobs_10_per_family": {
+      "pass": true,
+      "detail": ""
+    },
+    "resumes_20_per_domain": {
+      "pass": true,
+      "detail": ""
+    },
+    "each_resume_has_2plus_label_values": {
+      "pass": true,
+      "detail": "{2: 47, 3: 153}"
+    },
+    "resumes_with_a_label_ge1": {
+      "pass": true,
+      "detail": "resumes with at least one label-2 pair: 153/200"
+    },
+    "no_emails_urls_phones": {
+      "pass": true,
+      "detail": ""
+    },
+    "csv_strict_parse_jobs": {
+      "pass": true,
+      "detail": "100 rows x 14 cols"
+    },
+    "csv_strict_parse_resumes": {
+      "pass": true,
+      "detail": "200 rows x 6 cols"
+    },
+    "csv_strict_parse_training_pairs": {
+      "pass": true,
+      "detail": "2000 rows x 9 cols"
+    },
+    "csv_strict_parse_pair_label_audit": {
+      "pass": true,
+      "detail": "2000 rows x 14 cols"
+    },
+    "no_duplicate_resume_text": {
+      "pass": true,
+      "detail": ""
+    },
+    "resume_near_duplicates_lt_0.9": {
+      "pass": true,
+      "detail": "max pairwise TF-IDF cosine = 0.885"
+    },
+    "job_near_duplicates_lt_0.9": {
+      "pass": true,
+      "detail": "max pairwise TF-IDF cosine = 0.760"
+    },
+    "no_dominance_label_contradictions": {
+      "pass": true,
+      "detail": "violations=0"
+    },
+    "identical_factors_same_label": {
+      "pass": true,
+      "detail": ""
+    },
+    "audit_labels_match_pairs": {
+      "pass": true,
+      "detail": ""
+    }
+  },
+  "stats": {
+    "label_distribution": {
+      "0": 784,
+      "1": 789,
+      "2": 427
+    },
+    "mean_skill_overlap_by_label": {
+      "0": 0.266,
+      "1": 0.468,
+      "2": 0.7
+    },
+    "spearman_overlap_vs_label": 0.673,
+    "spearman_tfidf_cosine_vs_label": 0.652,
+    "best_overlap_only_threshold_accuracy": 0.652,
+    "label2_with_overlap_lt_0.5": 23,
+    "label0_with_overlap_ge_0.4": 161,
+    "label1_with_overlap_lt_0.3": 165,
+    "label0_with_overlap_ge_0.6": 72,
+    "pair_type_by_label": {
+      "adjacent_domain": {
+        "0": 228,
+        "1": 498,
+        "2": 99
+      },
+      "distant_domain": {
+        "0": 488,
+        "1": 55,
+        "2": 3
+      },
+      "same_domain": {
+        "0": 68,
+        "1": 236,
+        "2": 325
+      }
+    },
+    "rule_applied_counts": {
+      "score_threshold": 1285,
+      "hard_floor(experience/skill/domain)": 653,
+      "cap_at_1(gate for label 2 not met)": 62
+    },
+    "experience_level_counts_jobs": {
+      "Mid (3-5 years)": 36,
+      "Junior (1-3 years)": 27,
+      "Senior (5+ years)": 27,
+      "Intern (0-1 years)": 10
+    },
+    "resume_years_summary": {
+      "count": 200.0,
+      "mean": 3.12,
+      "std": 2.36,
+      "min": 0.0,
+      "25%": 1.5,
+      "50%": 3.0,
+      "75%": 5.0,
+      "max": 10.0
+    },
+    "max_resume_cosine": 0.885,
+    "max_job_cosine": 0.76
+  }
+}
