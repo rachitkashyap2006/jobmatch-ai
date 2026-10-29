@@ -1,41 +1,42 @@
 
-/* ── Design tokens ── */
-
 :root {
-  --bg: #F7F8F3;
-  --primary: #245C46;
-  --primary-dark: #1B4635;
-  --primary-light: #DDF3E4;
-  --primary-light-hover: #C8E8D4;
-  --text: #202923;
-  --text-secondary: #68736B;
+  --bg: #f7f9fc;
+  --primary: #155eef;
+  --primary-dark: #124dcc;
+  --primary-light: #edf3ff;
+  --primary-light-hover: #e2ebff;
+  --text: #1b2432;
+  --text-secondary: #687386;
   --card-bg: #FFFFFF;
-  --border: #E2E6E3;
-  --border-light: #EDF0ED;
+  --border: #e3e8f0;
+  --border-light: #edf0f5;
 
-  --score-good: #22865A;
-  --score-moderate: #C08416;
-  --score-low: #B83B3B;
+  --score-good: #155eef;
+  --score-moderate: #53647b;
+  --score-low: #8a94a5;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 12px;
-  --radius-xl: 14px;
+  --radius-sm: 7px;
+  --radius-md: 11px;
+  --radius-lg: 15px;
+  --radius-xl: 18px;
 
-  --transition: 0.15s ease;
+  --transition: 0.18s ease;
 }
-
-/* ── Reset ── */
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 24px;
 }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   font-size: 15px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -49,6 +50,7 @@ input {
 }
 
 button:focus-visible,
+a:focus-visible,
 label:focus-within,
 textarea:focus-visible {
   outline: 2px solid var(--primary);

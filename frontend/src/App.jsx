@@ -242,25 +242,61 @@ function App() {
   return (
     <main className="app">
       <header className="header">
-        <div className="brand">
-          <div className="brand-icon">JM</div>
-          <span>JobMatch AI</span>
-        </div>
-        <span className="header-label">SKILL GAP ANALYZER</span>
+        <a className="brand" href="#top" aria-label="JobMatch AI home">
+          <span className="brand-icon" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
+          <span>JobMatch<span className="brand-light"> AI</span></span>
+        </a>
+        <nav className="header-nav" aria-label="Main navigation">
+          <a href="#analyzer">Resume analysis</a>
+          <a href="#jobs">Job matches</a>
+          <a className="header-cta" href="#analyzer">
+            Get started <span aria-hidden="true">↗</span>
+          </a>
+        </nav>
       </header>
 
-      <section className="hero">
-        <h1>Find the roles that fit your skills.</h1>
-        <p>
-          Understand your strengths, identify missing skills,
-          and discover what to learn next.
-        </p>
+      <section className="hero" id="top">
+        <div className="hero-copy">
+          <span className="hero-eyebrow">
+            <span className="status-dot" />
+            A clearer view of your next move
+          </span>
+          <h1>
+            Know where you stand.
+            <br />
+            <span>See where you could go.</span>
+          </h1>
+          <p>
+            Put your experience beside the role you want. Get a grounded view
+            of your fit, the skills to build, and the jobs worth exploring.
+          </p>
+          <a className="hero-link" href="#analyzer">
+            Start with your resume <span aria-hidden="true">↓</span>
+          </a>
+        </div>
+        <aside className="hero-note" aria-label="How JobMatch works">
+          <span className="hero-note-label">A practical way forward</span>
+          <div className="hero-note-step">
+            <span>01</span>
+            <p>See how your experience maps to the role.</p>
+          </div>
+          <div className="hero-note-step">
+            <span>02</span>
+            <p>Focus on the skills that would move you forward.</p>
+          </div>
+          <div className="hero-note-rule" />
+          <span className="hero-note-foot">Your resume stays on this app's backend.</span>
+        </aside>
       </section>
 
       {/* ─── Upload & Analysis Form ─── */}
 
-      <form className="analyzer" onSubmit={analyzeResume}>
-        <section className="panel">
+      <form className="analyzer" id="analyzer" onSubmit={analyzeResume}>
+        <section className="panel upload-panel">
           <div className="section-heading">
             <span className="step">01</span>
             <div>
@@ -309,7 +345,7 @@ function App() {
           )}
         </section>
 
-        <section className="panel">
+        <section className="panel description-panel">
           <div className="section-heading">
             <span className="step">02</span>
             <div>
@@ -364,7 +400,7 @@ function App() {
 
       {/* ─── Job Finder ─── */}
 
-      <section className="panel job-finder">
+      <section className="panel job-finder" id="jobs">
         <div className="section-heading">
           <span className="step">03</span>
           <div>
@@ -403,7 +439,7 @@ function App() {
       {/* ─── Analysis Results ─── */}
 
       {result && (
-        <section className="results" ref={resultsRef}>
+        <section className="results" id="match-results" ref={resultsRef}>
           <div className="results-heading">
             <span className="eyebrow">ANALYSIS RESULTS</span>
             <h2>Your job-match breakdown</h2>
