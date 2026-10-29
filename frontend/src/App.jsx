@@ -1,8 +1,21 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "./App.css";
 
 const API_BASE_URL = "http://127.0.0.1:8000";
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+}
+
+function getScoreLevel(score) {
+  if (score >= 70) return "good";
+  if (score >= 40) return "moderate";
+  return "low";
+}
 
 function App() {
   const [resume, setResume] = useState(null);
@@ -20,14 +33,68 @@ function App() {
   const [learningLoading, setLearningLoading] = useState(false);
   const [learningError, setLearningError] = useState("");
 
-  function handleResumeChange(event) {
-    setResume(event.target.files?.[0] || null);
+  const [dragActive, setDragActive] = useState(false);
+  const resultsRef = useRef(null);
+  const fileInputRef = useRef(null);
+
+  function validateAndSetFile(file) {
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      setError("Only PDF files are supported. Please choose a .pdf file.");
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      setError(
+        `File is too large (${formatFileSize(file.size)}). Maximum size is 5 MB.`
+      );
+      return;
+    }
+
+    setResume(file);
     setResult(null);
     setJobResults(null);
     setLearningResources(null);
     setLearningError("");
     setError("");
     setJobError("");
+  }
+
+  function handleResumeChange(event) {
+    validateAndSetFile(event.target.files?.[0]);
+  }
+
+  function removeFile() {
+    setResume(null);
+    setResult(null);
+    setJobResults(null);
+    setLearningResources(null);
+    setLearningError("");
+    setError("");
+    setJobError("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  }
+
+  function handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    validateAndSetFile(e.dataTransfer.files?.[0]);
   }
 
   async function analyzeResume(event) {
@@ -66,6 +133,13 @@ function App() {
       }
 
       setResult(data);
+
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
     } catch (err) {
       setError(
         err.message ||
@@ -172,21 +246,18 @@ function App() {
           <div className="brand-icon">JM</div>
           <span>JobMatch AI</span>
         </div>
-        <span className="header-label">AI RESUME ANALYZER</span>
+        <span className="header-label">SKILL GAP ANALYZER</span>
       </header>
 
       <section className="hero">
-        <span className="eyebrow">YOUR NEXT CAREER MOVE</span>
-        <h1>
-          Your resume.
-          <br />
-          Your <span>next opportunity.</span>
-        </h1>
+        <h1>Find the roles that fit your skills.</h1>
         <p>
-          Analyze your skills, discover skill gaps, and find jobs
-          that best match your resume.
+          Understand your strengths, identify missing skills,
+          and discover what to learn next.
         </p>
       </section>
+
+      {/* ─── Upload & Analysis Form ─── */}
 
       <form className="analyzer" onSubmit={analyzeResume}>
         <section className="panel">
@@ -194,22 +265,48 @@ function App() {
             <span className="step">01</span>
             <div>
               <h2>Upload your resume</h2>
-              <p>Choose a PDF containing selectable text.</p>
+              <p>PDF with selectable text. Maximum 5 MB.</p>
             </div>
           </div>
 
-          <label className="upload-area">
-            <input
-              type="file"
-              accept=".pdf,application/pdf"
-              onChange={handleResumeChange}
-            />
-            <span className="upload-icon">↑</span>
-            <strong>
-              {resume ? resume.name : "Click to upload your resume"}
-            </strong>
-            <span>PDF format · Maximum 5 MB</span>
-          </label>
+          {resume ? (
+            <div className="file-info">
+              <div className="file-info-icon">PDF</div>
+              <div className="file-info-details">
+                <strong>{resume.name}</strong>
+                <span>{formatFileSize(resume.size)}</span>
+              </div>
+              <button
+                type="button"
+                className="file-remove"
+                onClick={removeFile}
+                aria-label="Remove file"
+              >
+                ✕
+              </button>
+            </div>
+          ) : (
+            <label
+              className={`upload-area${dragActive ? " drag-active" : ""}`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,application/pdf"
+                onChange={handleResumeChange}
+              />
+              <span className="upload-icon">↑</span>
+              <strong>
+                {dragActive
+                  ? "Drop your PDF here"
+                  : "Click or drag your resume here"}
+              </strong>
+              <span>PDF format only</span>
+            </label>
+          )}
         </section>
 
         <section className="panel">
@@ -237,21 +334,35 @@ function App() {
           />
         </section>
 
-        {error && <div className="error">{error}</div>}
+        {error && (
+          <div className="error" role="alert">
+            <span className="error-icon">!</span>
+            {error}
+          </div>
+        )}
 
         <button
           className="analyze-button"
           disabled={loading}
           type="submit"
         >
-          {loading ? "Analyzing resume..." : "Analyze my resume →"}
+          {loading ? (
+            <>
+              <span className="spinner" />
+              Analyzing resume…
+            </>
+          ) : (
+            "Analyze my resume →"
+          )}
         </button>
 
         <p className="privacy-note">
           Your resume is processed by your local backend.
-          This demo does not save analysis results to a database.
+          No data is saved or sent to third parties.
         </p>
       </form>
+
+      {/* ─── Job Finder ─── */}
 
       <section className="panel job-finder">
         <div className="section-heading">
@@ -260,28 +371,42 @@ function App() {
             <h2>Discover matching jobs</h2>
             <p>
               Get up to five job recommendations based on your resume.
-              You do not need to enter a job description for this feature.
+              No job description required.
             </p>
           </div>
         </div>
 
         <button
-          className="analyze-button"
+          className="analyze-button secondary"
           type="button"
           onClick={findRecommendedJobs}
           disabled={jobLoading || !resume}
         >
-          {jobLoading ? "Finding matching jobs..." : "Find my top 5 jobs →"}
+          {jobLoading ? (
+            <>
+              <span className="spinner" />
+              Finding matching jobs…
+            </>
+          ) : (
+            "Find my top 5 jobs →"
+          )}
         </button>
 
-        {jobError && <div className="error">{jobError}</div>}
+        {jobError && (
+          <div className="error" role="alert">
+            <span className="error-icon">!</span>
+            {jobError}
+          </div>
+        )}
       </section>
 
+      {/* ─── Analysis Results ─── */}
+
       {result && (
-        <section className="results">
+        <section className="results" ref={resultsRef}>
           <div className="results-heading">
-            <span className="eyebrow">YOUR ANALYSIS</span>
-            <h2>Here's your job match</h2>
+            <span className="eyebrow">ANALYSIS RESULTS</span>
+            <h2>Your job-match breakdown</h2>
           </div>
 
           <div className="score-grid">
@@ -290,7 +415,7 @@ function App() {
               value={result.final_match_score}
             />
             <ScoreCard
-              title="Skill match"
+              title="Skill coverage"
               value={result.skill_match_score}
             />
             <ScoreCard
@@ -312,10 +437,11 @@ function App() {
             />
           </div>
 
+          {/* Learning roadmap */}
           <section className="recommendations panel">
-            <h2>Your learning roadmap</h2>
+            <h2>Learning roadmap</h2>
             <p className="subheading">
-              Recommended learning paths for your skill gaps.
+              Prioritized learning paths for your skill gaps.
             </p>
 
             {result.recommendations?.length ? (
@@ -326,7 +452,9 @@ function App() {
                 >
                   <div className="recommendation-top">
                     <strong>{item.skill}</strong>
-                    <span>Priority {item.priority}</span>
+                    <span className={`priority priority-${item.priority}`}>
+                      Priority {item.priority}
+                    </span>
                   </div>
                   <p>{item.learning_path}</p>
 
@@ -339,9 +467,11 @@ function App() {
                 </div>
               ))
             ) : (
-              <p>
-                No missing skills were identified by the current skill list.
-              </p>
+              <div className="empty-state">
+                <p>
+                  No skill gaps detected — your skills cover this role well.
+                </p>
+              </div>
             )}
           </section>
 
@@ -352,187 +482,234 @@ function App() {
               <div>
                 <h2>YouTube learning resources</h2>
                 <p>
-                  Find long-form tutorials and courses for your missing skills.
+                  Find tutorials and courses for your missing skills.
                 </p>
               </div>
             </div>
 
             {result.missing_skills?.length > 0 ? (
               <>
-                <p>
+                <p className="youtube-note">
                   Resources will be searched for up to five missing skills.
                 </p>
 
                 <button
-                  className="analyze-button"
+                  className="analyze-button secondary"
                   type="button"
                   onClick={findLearningResources}
                   disabled={learningLoading}
                 >
-                  {learningLoading
-                    ? "Finding YouTube courses..."
-                    : "Find YouTube learning resources →"}
+                  {learningLoading ? (
+                    <>
+                      <span className="spinner" />
+                      Finding YouTube courses…
+                    </>
+                  ) : (
+                    "Find YouTube learning resources →"
+                  )}
                 </button>
               </>
             ) : (
-              <p>
-                No missing skills were identified. You do not need to search
-                for learning resources right now.
-              </p>
+              <div className="empty-state">
+                <p>
+                  No missing skills detected — no learning resources needed
+                  right now.
+                </p>
+              </div>
             )}
 
             {learningError && (
               <div className="error" role="alert">
+                <span className="error-icon">!</span>
                 {learningError}
               </div>
             )}
 
             {learningResources !== null && (
               <div className="youtube-results">
-                {Object.entries(learningResources).map(([skill, videos]) => (
-                  <div className="youtube-skill-group" key={skill}>
-                    <h3>{skill}</h3>
+                {Object.entries(learningResources).map(
+                  ([skill, videos]) => (
+                    <div className="youtube-skill-group" key={skill}>
+                      <h3>{skill}</h3>
 
-                    {videos?.length > 0 ? (
-                      <div className="youtube-video-grid">
-                        {videos.map((video) => (
-                          <article
-                            className="recommendation youtube-video"
-                            key={video.video_id}
-                          >
-                            <a
-                              href={video.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              aria-label={`Watch ${video.title} on YouTube`}
+                      {videos?.length > 0 ? (
+                        <div className="youtube-video-grid">
+                          {videos.map((video) => (
+                            <article
+                              className="youtube-video"
+                              key={video.video_id}
                             >
-                              {video.thumbnail && (
-                                <img
-                                  className="youtube-thumbnail"
-                                  src={video.thumbnail}
-                                  alt={`Thumbnail for ${video.title}`}
-                                  loading="lazy"
-                                />
-                              )}
-                            </a>
-
-                            <h4>
                               <a
                                 href={video.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                aria-label={`Watch ${video.title} on YouTube`}
                               >
-                                {video.title}
+                                {video.thumbnail && (
+                                  <img
+                                    className="youtube-thumbnail"
+                                    src={video.thumbnail}
+                                    alt={`Thumbnail for ${video.title}`}
+                                    loading="lazy"
+                                  />
+                                )}
                               </a>
-                            </h4>
 
-                            <p className="youtube-channel">
-                              {video.channel}
-                            </p>
+                              <div className="youtube-video-body">
+                                <h4>
+                                  <a
+                                    href={video.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {video.title}
+                                  </a>
+                                </h4>
 
-                            <p className="youtube-meta">
-                              {Number(video.views || 0).toLocaleString()} views
-                              {" · "}
-                              {video.duration || "Duration unavailable"}
-                            </p>
+                                <p className="youtube-channel">
+                                  {video.channel}
+                                </p>
 
-                            {video.is_course && (
-                              <span className="course-label">
-                                Full course / tutorial
-                              </span>
-                            )}
+                                <p className="youtube-meta">
+                                  {Number(
+                                    video.views || 0
+                                  ).toLocaleString()}{" "}
+                                  views
+                                  {" · "}
+                                  {video.duration || "Duration unavailable"}
+                                </p>
 
-                            <a
-                              className="youtube-watch-link"
-                              href={video.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Watch on YouTube ↗
-                            </a>
-                          </article>
-                        ))}
-                      </div>
-                    ) : (
-                      <p>
-                        No suitable videos found for this skill. Try searching
-                        again later.
-                      </p>
-                    )}
-                  </div>
-                ))}
+                                {video.is_course && (
+                                  <span className="course-label">
+                                    Full course
+                                  </span>
+                                )}
+
+                                <a
+                                  className="youtube-watch-link"
+                                  href={video.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  Watch on YouTube ↗
+                                </a>
+                              </div>
+                            </article>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="empty-state">
+                          <p>No suitable videos found for this skill.</p>
+                        </div>
+                      )}
+                    </div>
+                  )
+                )}
               </div>
             )}
           </section>
 
           <p className="disclaimer">
-            Analysis scores are estimates based on the current skill-matching
-            rules and semantic similarity model. They are not probabilities
-            of getting hired.
+            Scores are estimates based on skill matching and semantic
+            similarity. They are not predictions of hiring outcomes.
           </p>
         </section>
       )}
 
+      {/* ─── Job Recommendations ─── */}
+
       {jobResults !== null && (
         <section className="results">
           <div className="results-heading">
-            <span className="eyebrow">ML JOB RECOMMENDATIONS</span>
-            <h2>Your top matching jobs</h2>
+            <span className="eyebrow">JOB RECOMMENDATIONS</span>
+            <h2>Your top matching roles</h2>
             <p>
-              Jobs are ranked using your current machine-learning model.
+              Ranked by your machine-learning model using resume content.
             </p>
           </div>
 
           {jobResults.length > 0 ? (
-            jobResults.map((job, index) => (
-              <article
-                className="panel recommendation job-result"
-                key={job.job_title || index}
-              >
-                <div className="recommendation-top">
-                  <strong>
-                    {index + 1}. {job.job_title}
-                  </strong>
-                  <span>
-                    {job.predicted_relevance}% relevance score
-                  </span>
-                </div>
+            <div className="job-results-list">
+              {jobResults.map((job, index) => (
+                <article
+                  className="panel job-result"
+                  key={job.job_title || index}
+                >
+                  <div className="job-result-header">
+                    <div className="job-result-rank">{index + 1}</div>
+                    <div className="job-result-title">
+                      <strong>{job.job_title}</strong>
+                      <span className="job-result-experience">
+                        {job.experience_level}
+                      </span>
+                    </div>
+                    <div className="job-result-score">
+                      <strong>{job.predicted_relevance}%</strong>
+                      <span>relevance</span>
+                    </div>
+                  </div>
 
-                <p>
-                  <strong>Experience level:</strong>{" "}
-                  {job.experience_level}
-                </p>
+                  <div className="job-result-bar">
+                    <div
+                      className="job-result-bar-fill"
+                      style={{
+                        width: `${Math.min(100, job.predicted_relevance)}%`,
+                      }}
+                    />
+                  </div>
 
-                <p>
-                  <strong>Skill overlap:</strong> {job.skill_match}%
-                </p>
+                  <div className="job-result-stats">
+                    Skill overlap: {job.skill_match}%
+                  </div>
 
-                <div className="job-skills">
-                  <strong>Matched skills</strong>
-                  <SkillCard
-                    title=""
-                    skills={job.matched_skills}
-                    type="matched"
-                  />
-                </div>
-
-                <div className="job-skills">
-                  <strong>Skills to learn</strong>
-                  <SkillCard
-                    title=""
-                    skills={job.missing_skills}
-                    type="missing"
-                  />
-                </div>
-              </article>
-            ))
+                  <div className="job-skills-row">
+                    <div className="job-skills-col">
+                      <strong>Matched skills</strong>
+                      <div className="skill-list">
+                        {job.matched_skills?.length > 0 ? (
+                          job.matched_skills.map((skill, i) => (
+                            <span
+                              className="skill-tag matched"
+                              key={`m-${skill}-${i}`}
+                            >
+                              ✓ {skill}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="no-skills">None</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="job-skills-col">
+                      <strong>Skills to learn</strong>
+                      <div className="skill-list">
+                        {job.missing_skills?.length > 0 ? (
+                          job.missing_skills.map((skill, i) => (
+                            <span
+                              className="skill-tag missing"
+                              key={`x-${skill}-${i}`}
+                            >
+                              + {skill}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="no-skills">None needed</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
           ) : (
-            <p>No job recommendations were returned.</p>
+            <div className="empty-state panel">
+              <p>No job recommendations were returned for this resume.</p>
+            </div>
           )}
 
           <p className="disclaimer">
-            Relevance scores are estimates from a small prototype dataset.
-            They are not hiring probabilities or guarantees of job suitability.
+            Relevance scores are estimates from a prototype dataset.
+            They are not hiring probabilities.
           </p>
         </section>
       )}
@@ -542,11 +719,14 @@ function App() {
   );
 }
 
+/* ─── Helper Components ─── */
+
 function ScoreCard({ title, value }) {
   const score = Number(value) || 0;
+  const level = getScoreLevel(score);
 
   return (
-    <div className="score-card">
+    <div className={`score-card ${level}`}>
       <p>{title}</p>
       <strong>{score.toFixed(1)}%</strong>
       <div className="progress">
@@ -577,7 +757,7 @@ function SkillCard({ title, skills, type }) {
           ))}
         </div>
       ) : (
-        <p>No skills to display.</p>
+        <p className="no-skills">No skills to display.</p>
       )}
     </div>
   );

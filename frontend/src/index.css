@@ -1,14 +1,45 @@
 
+/* ── Design tokens ── */
+
+:root {
+  --bg: #F7F8F3;
+  --primary: #245C46;
+  --primary-dark: #1B4635;
+  --primary-light: #DDF3E4;
+  --primary-light-hover: #C8E8D4;
+  --text: #202923;
+  --text-secondary: #68736B;
+  --card-bg: #FFFFFF;
+  --border: #E2E6E3;
+  --border-light: #EDF0ED;
+
+  --score-good: #22865A;
+  --score-moderate: #C08416;
+  --score-low: #B83B3B;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+
+  --transition: 0.15s ease;
+}
+
+/* ── Reset ── */
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background: #f8faf8;
-  color: #1c3027;
-  font-family: Inter, Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 button,
@@ -20,6 +51,15 @@ input {
 button:focus-visible,
 label:focus-within,
 textarea:focus-visible {
-  outline: 2px solid #25816b;
+  outline: 2px solid var(--primary);
   outline-offset: 3px;
+}
+
+a {
+  color: var(--primary);
+}
+
+::selection {
+  background: var(--primary-light);
+  color: var(--primary-dark);
 }
