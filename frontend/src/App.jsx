@@ -22,6 +22,9 @@ function App() {
   const [jobDescription, setJobDescription] = useState("");
   const [result, setResult] = useState(null);
   const [jobResults, setJobResults] = useState(null);
+  const [jobProfile, setJobProfile] = useState(null);
+  const [jobWarnings, setJobWarnings] = useState([]);
+  const [recommender, setRecommender] = useState(null);
 
   const [loading, setLoading] = useState(false);
   const [jobLoading, setJobLoading] = useState(false);
@@ -55,6 +58,8 @@ function App() {
     setResume(file);
     setResult(null);
     setJobResults(null);
+    setJobProfile(null);
+    setJobWarnings([]);
     setLearningResources(null);
     setLearningError("");
     setError("");
@@ -69,6 +74,8 @@ function App() {
     setResume(null);
     setResult(null);
     setJobResults(null);
+    setJobProfile(null);
+    setJobWarnings([]);
     setLearningResources(null);
     setLearningError("");
     setError("");
@@ -176,6 +183,9 @@ function App() {
       }
 
       setJobResults(data.recommended_jobs || []);
+      setJobProfile(data.candidate_profile || null);
+      setJobWarnings(data.data_quality_warnings || []);
+      setRecommender(data.recommender || null);
     } catch (err) {
       setJobError(
         err.message ||
@@ -442,8 +452,10 @@ function App() {
         <section className="results" id="match-results" ref={resultsRef}>
           <div className="results-heading">
             <span className="eyebrow">ANALYSIS RESULTS</span>
-            <h2>Your job-match breakdown</h2>
+            <h2>Your resume intelligence profile</h2>
           </div>
+
+          <CandidateProfile profile={result.candidate_profile} />
 
           <div className="score-grid">
             <ScoreCard
@@ -471,6 +483,27 @@ function App() {
               skills={result.missing_skills}
               type="missing"
             />
+            <SkillCard
+              title="Partially matched"
+              skills={(result.partially_matched_skills || []).map(
+                (item) =>
+                  `${item.required_skill} ← ${item.candidate_skill}`
+              )}
+              type="partial"
+            />
+          </div>
+
+          <div className="skill-grid">
+            <SkillCard
+              title="Matched preferred skills"
+              skills={result.matched_preferred_skills}
+              type="matched"
+            />
+            <SkillCard
+              title="Preferred skills to develop"
+              skills={result.missing_preferred_skills}
+              type="missing"
+            />
           </div>
 
           {/* Learning roadmap */}
@@ -493,6 +526,12 @@ function App() {
                     </span>
                   </div>
                   <p>{item.learning_path}</p>
+                  {item.related_skill && (
+                    <small>
+                      Related experience: {item.related_skill}; this is
+                      transferable, not an exact match.
+                    </small>
+                  )}
 
                   {item.prerequisites_missing?.length > 0 && (
                     <small>
@@ -646,8 +685,8 @@ function App() {
           </section>
 
           <p className="disclaimer">
-            Scores are estimates based on skill matching and semantic
-            similarity. They are not predictions of hiring outcomes.
+            Match scores combine required skills (60%) and semantic similarity
+            (40%). They are estimates, not predictions of hiring outcomes.
           </p>
         </section>
       )}
@@ -660,9 +699,22 @@ function App() {
             <span className="eyebrow">JOB RECOMMENDATIONS</span>
             <h2>Your top matching roles</h2>
             <p>
-              Ranked by your machine-learning model using resume content.
+              Ranked against your skills, experience evidence, projects, and
+              role similarity.
             </p>
           </div>
+
+          {jobProfile && <CandidateProfile profile={jobProfile} />}
+          {jobWarnings.length > 0 && (
+            <div className="profile-warnings" role="status">
+              <strong>Profile data limitations</strong>
+              <ul>
+                {jobWarnings.map((warning) => (
+                  <li key={warning}>{warning}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {jobResults.length > 0 ? (
             <div className="job-results-list">
@@ -695,8 +747,29 @@ function App() {
                   </div>
 
                   <div className="job-result-stats">
-                    Skill overlap: {job.skill_match}%
+                    Required-skill match: {job.skill_match}% · Confidence:{" "}
+                    {job.confidence || "unknown"}
                   </div>
+
+                  {job.explanations?.length > 0 && (
+                    <ul className="job-explanations">
+                      {job.explanations.map((reason) => (
+                        <li key={reason}>{reason}</li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {job.score_breakdown && (
+                    <div className="job-score-breakdown">
+                      {Object.entries(job.score_breakdown).map(
+                        ([component, score]) => (
+                          <span key={component}>
+                            {component.replaceAll("_", " ")}: {score}%
+                          </span>
+                        )
+                      )}
+                    </div>
+                  )}
 
                   <div className="job-skills-row">
                     <div className="job-skills-col">
@@ -709,6 +782,26 @@ function App() {
                               key={`m-${skill}-${i}`}
                             >
                               ✓ {skill}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="no-skills">None</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="job-skills-col">
+                      <strong>Partially matched</strong>
+                      <div className="skill-list">
+                        {job.partially_matched_skills?.length > 0 ? (
+                          job.partially_matched_skills.map((item) => (
+                            <span
+                              className="skill-tag partial"
+                              key={`${item.required_skill}-${item.candidate_skill}`}
+                              title={`Transferability ${Math.round(
+                                item.transferability * 100
+                              )}%`}
+                            >
+                              {item.required_skill} ← {item.candidate_skill}
                             </span>
                           ))
                         ) : (
@@ -744,8 +837,9 @@ function App() {
           )}
 
           <p className="disclaimer">
-            Relevance scores are estimates from a prototype dataset.
-            They are not hiring probabilities.
+            Scores are normalized ranking signals, not hiring probabilities.
+            {recommender?.semantic_backend &&
+              ` Semantic backend: ${recommender.semantic_backend}.`}
           </p>
         </section>
       )}
@@ -794,6 +888,94 @@ function SkillCard({ title, skills, type }) {
         </div>
       ) : (
         <p className="no-skills">No skills to display.</p>
+      )}
+    </div>
+  );
+}
+
+function CandidateProfile({ profile }) {
+  if (!profile) return null;
+
+  const skillNames = (profile.technical_skills || []).map(
+    (item) => item.skill
+  );
+  const softSkillNames = (profile.soft_skills || []).map(
+    (item) => item.skill
+  );
+
+  return (
+    <section className="panel candidate-profile">
+      <div className="candidate-profile-heading">
+        <div>
+          <span className="eyebrow">EVIDENCE-BASED PROFILE</span>
+          <h2>{profile.candidate_level || "unknown"} candidate</h2>
+        </div>
+        <span className="candidate-experience">
+          {profile.experience_years == null
+            ? "Experience not stated"
+            : `${profile.experience_years} years stated`}
+        </span>
+      </div>
+
+      <div className="profile-evidence-grid">
+        <ProfileEvidence title="Education" items={profile.education || []} />
+        <ProfileEvidence
+          title="Experience"
+          items={[
+            ...(profile.work_experience || []),
+            ...(profile.internships || []),
+          ]}
+        />
+        <ProfileEvidence title="Projects" items={profile.projects || []} />
+        <ProfileEvidence
+          title="Certifications"
+          items={profile.certifications || []}
+        />
+      </div>
+
+      <div className="profile-skill-summary">
+        <strong>Technical skills</strong>
+        <span>{skillNames.length ? skillNames.join(", ") : "None verified"}</span>
+      </div>
+      {softSkillNames.length > 0 && (
+        <div className="profile-skill-summary">
+          <strong>Soft skills</strong>
+          <span>{softSkillNames.join(", ")}</span>
+        </div>
+      )}
+
+      {profile.data_quality_warnings?.length > 0 && (
+        <div className="profile-warnings">
+          <strong>Data-quality notes</strong>
+          <ul>
+            {profile.data_quality_warnings.map((warning) => (
+              <li key={warning}>{warning}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function ProfileEvidence({ title, items }) {
+  return (
+    <div className="profile-evidence">
+      <strong>{title}</strong>
+      {items.length > 0 ? (
+        <ul>
+          {items.map((item, index) => (
+            <li key={`${title}-${index}`}>
+              {item.degree || item.role || item.name || "Evidence found"}
+              <details>
+                <summary>Resume evidence</summary>
+                <span>{item.evidence}</span>
+              </details>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <span className="no-skills">No evidence found</span>
       )}
     </div>
   );

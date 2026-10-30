@@ -1,4 +1,7 @@
 
+from skill_extractor import normalize_skill
+
+
 # Skill priority and learning recommendations
 
 SKILL_RECOMMENDATIONS = {
@@ -55,14 +58,33 @@ SKILL_RECOMMENDATIONS = {
 }
 
 
-def recommend_skills(missing_skills, candidate_skills):
+def recommend_skills(
+    missing_skills,
+    candidate_skills,
+    partially_matched=(),
+    required_skills=None,
+):
     recommendations = []
 
-    candidate_skills = set(candidate_skills)
+    candidate_skills = {normalize_skill(skill) for skill in candidate_skills}
+    required_order = [
+        normalize_skill(skill)
+        for skill in (required_skills or [])
+    ]
+    partial_by_required = {
+        item["required_skill"]: item
+        for item in partially_matched
+    }
+    skills_to_learn = list(dict.fromkeys(
+        [
+            *(normalize_skill(skill) for skill in missing_skills),
+            *partial_by_required,
+        ]
+    ))
 
-    for skill in missing_skills:
+    for skill in skills_to_learn:
         details = SKILL_RECOMMENDATIONS.get(
-            skill,
+            skill.casefold(),
             {
                 "priority": 3,
                 "prerequisites": [],
@@ -73,16 +95,37 @@ def recommend_skills(missing_skills, candidate_skills):
         prerequisites_missing = [
             prerequisite
             for prerequisite in details["prerequisites"]
-            if prerequisite not in candidate_skills
+            if normalize_skill(prerequisite) not in candidate_skills
         ]
 
         recommendations.append({
             "skill": skill,
-            "priority": details["priority"],
+            "priority": min(
+                details["priority"],
+                1 if skill in required_order[:3] else (
+                    2 if skill in required_order else 3
+                ),
+            ),
             "learning_path": details["learning_path"],
-            "prerequisites_missing": prerequisites_missing
+            "prerequisites_missing": prerequisites_missing,
+            "status": "partially_matched" if skill in partial_by_required else "missing",
+            "related_skill": next(
+                (
+                    item["candidate_skill"]
+                    for item in partially_matched
+                    if item["required_skill"] == skill
+                ),
+                None,
+            ),
         })
 
-    recommendations.sort(key=lambda item: item["priority"])
+    recommendations.sort(
+        key=lambda item: (
+            item["priority"],
+            required_order.index(item["skill"])
+            if item["skill"] in required_order else len(required_order),
+            item["skill"].casefold(),
+        )
+    )
 
     return recommendations

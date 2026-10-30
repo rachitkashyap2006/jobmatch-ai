@@ -534,6 +534,133 @@ textarea:focus {
   color: #8B5E14;
 }
 
+.skill-tag.partial {
+  background: #EDE9FE;
+  color: #5B21B6;
+}
+
+.candidate-profile {
+  margin-bottom: 16px;
+}
+
+.candidate-profile-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.candidate-profile-heading h2 {
+  margin: 4px 0 0;
+  text-transform: capitalize;
+}
+
+.candidate-experience {
+  padding: 6px 10px;
+  border-radius: 20px;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.profile-evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.profile-evidence > strong,
+.profile-skill-summary > strong,
+.profile-warnings > strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.profile-evidence ul,
+.profile-warnings ul,
+.job-explanations {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.profile-evidence li,
+.profile-warnings li,
+.job-explanations li {
+  margin: 4px 0;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.profile-evidence details {
+  margin: 3px 0 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.profile-evidence details summary {
+  cursor: pointer;
+  color: var(--primary);
+}
+
+.profile-evidence details span {
+  display: block;
+  padding-top: 5px;
+  line-height: 1.5;
+}
+
+.profile-skill-summary {
+  border-top: 1px solid var(--border-light);
+  margin-top: 14px;
+  padding-top: 12px;
+}
+
+.profile-skill-summary > span {
+  display: block;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.profile-warnings {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px solid #F3E2B8;
+  border-radius: var(--radius-md);
+  background: #FFFBEB;
+  color: #6B4E16;
+}
+
+.profile-warnings > strong {
+  color: #805D12;
+}
+
+.job-explanations {
+  margin-bottom: 14px;
+  color: var(--text-secondary);
+}
+
+.job-score-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.job-score-breakdown span {
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  padding: 4px 9px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  text-transform: capitalize;
+}
+
 .no-skills {
   font-size: 13px;
   color: var(--text-secondary);
@@ -813,7 +940,7 @@ textarea:focus {
 
 .job-skills-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
   padding-top: 14px;
   border-top: 1px solid var(--border-light);
@@ -885,6 +1012,14 @@ footer {
 
   .job-skills-row {
     grid-template-columns: 1fr;
+  }
+
+  .profile-evidence-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .candidate-profile-heading {
+    flex-direction: column;
   }
 
   .job-result-header {

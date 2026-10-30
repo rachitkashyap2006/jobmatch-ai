@@ -1,30 +1,16 @@
-from resume_parser import extract_text_from_pdf
-from semantic_matcher import calculate_similarity
+import semantic_matcher
 
 
-# Resume PDF
-pdf_file = r"D:\projectCV\Rachit_cv.pdf"
+def test_semantic_similarity_uses_cosine_tfidf_fallback(monkeypatch):
+    def unavailable_model():
+        raise OSError("no local model")
 
+    monkeypatch.setattr(
+        semantic_matcher, "_load_local_sentence_transformer", unavailable_model
+    )
+    scores = semantic_matcher.calculate_similarities(
+        "Python backend APIs", ["Python backend APIs", "Tableau dashboards"]
+    )
 
-# Extract resume text
-resume_text = extract_text_from_pdf(pdf_file)
-
-
-# Job Description
-job_description = """
-We are looking for a Data Scientist with experience
-in Python, SQL, Pandas, NumPy, Scikit-learn,
-Machine Learning, Power BI and Docker.
-"""
-
-
-# Calculate semantic similarity
-score = calculate_similarity(
-    resume_text,
-    job_description
-)
-
-
-print("\n========== SEMANTIC MATCH SCORE ==========")
-
-print(f"{score:.2f}%")
+    assert scores[0] > scores[1]
+    assert semantic_matcher.get_semantic_backend() == "tfidf"
